@@ -15,7 +15,6 @@
     </style>
 </head>
 <body>
-
     <h2>Edit Employee</h2>
 
     <form th:action="@{/employees/{id}/update(id=${employee.id})}" th:object="${employee}" method="post">
@@ -47,6 +46,5 @@
         <button type="submit">Update Employee</button>
         <a th:href="@{/employees}">Cancel</a>
     </form>
-
 </body>
 </html>

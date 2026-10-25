@@ -37,6 +37,10 @@ public class EmployeeController {
                                BindingResult result,
                                Model model,
                                RedirectAttributes redirectAttributes) {
+        if (!result.hasFieldErrors("email") && employeeService.isEmailTaken(employee.getEmail())) {
+            result.rejectValue("email", "duplicate", "This email is already registered");
+        }
+
         // Return to page if validation errors exist
         if (result.hasErrors()) {
             model.addAttribute("employees", employeeService.getAllEmployees(null));
@@ -65,6 +69,11 @@ public class EmployeeController {
                                  @Valid @ModelAttribute("employee") Employee employee,
                                  BindingResult result,
                                  RedirectAttributes redirectAttributes) {
+        if (!result.hasFieldErrors("email")
+                && employeeService.isEmailTakenByAnother(employee.getEmail(), id)) {
+            result.rejectValue("email", "duplicate", "This email is already registered");
+        }
+
         if (result.hasErrors()) {
             return "edit-employee";
         }
