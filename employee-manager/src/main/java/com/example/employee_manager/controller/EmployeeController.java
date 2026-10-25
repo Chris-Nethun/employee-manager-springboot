@@ -22,8 +22,9 @@ public class EmployeeController {
 
     // READ: Show all employees and the form
     @GetMapping
-    public String listEmployees(Model model) {
-        model.addAttribute("employees", employeeService.getAllEmployees());
+    public String listEmployees(@RequestParam(required = false) String keyword, Model model) {
+        model.addAttribute("employees", employeeService.getAllEmployees(keyword));
+        model.addAttribute("keyword", keyword);
         if (!model.containsAttribute("employee")) {
             model.addAttribute("employee", new Employee());
         }
@@ -38,7 +39,7 @@ public class EmployeeController {
                                RedirectAttributes redirectAttributes) {
         // Return to page if validation errors exist
         if (result.hasErrors()) {
-            model.addAttribute("employees", employeeService.getAllEmployees());
+            model.addAttribute("employees", employeeService.getAllEmployees(null));
             return "employees";
         }
 
@@ -50,7 +51,7 @@ public class EmployeeController {
     // EDIT: Show the edit form
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Employee employee = employeeService.getEmployeeById(id);
+        Employee employee = employeeService.getEmployeeById(id).orElse(null);
         if (employee == null) {
             return "redirect:/employees";
         }
@@ -68,7 +69,7 @@ public class EmployeeController {
             return "edit-employee";
         }
 
-        Employee existingEmployee = employeeService.getEmployeeById(id);
+        Employee existingEmployee = employeeService.getEmployeeById(id).orElse(null);
         if (existingEmployee == null) {
             return "redirect:/employees";
         }
@@ -81,7 +82,7 @@ public class EmployeeController {
     // DELETE: Remove employee
     @PostMapping("/{id}/delete")
     public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        employeeService.deleteEmployee(id);
+        employeeService.deleteEmployeeById(id);
         redirectAttributes.addFlashAttribute("successMessage", "Employee deleted successfully!");
         return "redirect:/employees";
     }
